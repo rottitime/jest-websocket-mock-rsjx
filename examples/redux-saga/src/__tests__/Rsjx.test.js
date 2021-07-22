@@ -18,6 +18,12 @@ describe("The Rsjx component", () => {
         WS.clean();
       });
 
+
+  it("rendered", async () => {
+    await render(<Rsjx />);
+    expect(screen.getByText("RSJX")).toBeInTheDocument();
+  })
+
     it("the server keeps track of received messages, and yields them as they come in", async () => {
       let screen;
         client = new WebSocket("ws://localhost:8080");
@@ -34,36 +40,28 @@ describe("The Rsjx component", () => {
               console.log('*****************Server recieved', data)
               act(() => {
                 /* fire events that update state */
-                socket.send(`{"server v2": 1234}` );
-                server.send(`{"server v3": 1234}` );
+                socket.send(`{"server v2": ${data}}` );
+                // socket.send(`{"server v3": 1234}` );
                 // expect(screen).toMatchSnapshot();
               });
               
           });
         });
 
-
         await server.connected;
    
         screen = await render(<Rsjx />);
        
-        // client.send("hello");
         await expect(server).toReceiveMessage('sender$ sent to server1: 123');
-        // await expect(server).toReceiveMessage('"sender$ sent to server2: 123"');
-        // await expect(server).toReceiveMessage('"sender$ sent to server3: 123"');
-        // screen.debug()
-        expect(screen.getByText('recieved: {"server v2":1234}')).toBeInTheDocument();
-        // expect(screen.getByText('recieved: {"server v3":1234}')).toBeInTheDocument();
+        expect(screen.getByText('recieved: {"server v2":"sender$ sent to server1: 123"}')).toBeInTheDocument();
+        await expect(server).toReceiveMessage('sender$ sent to server2: 123');
+        expect(screen.getByText('recieved: {"server v2":"sender$ sent to server2: 123"}')).toBeInTheDocument();
+        await expect(server).toReceiveMessage('sender$ sent to server3: 123');
+        expect(screen.getByText('recieved: {"server v2":"sender$ sent to server3: 123"}')).toBeInTheDocument();
 
-        console.log(messages)
-        // expect(server).toHaveReceivedMessages(["hello"]);
       });
 
 
-//   it("rendered", async () => {
-//     await render(<Rsjx />);
-//     expect(screen.getByText("RSJX")).toBeInTheDocument();
-//   })
 
 //   it("ws connected", async () => {
 //     await server.connected;    
