@@ -6,8 +6,9 @@ To run the tests:
 
 ```bash
 cd redux-saga  # or `cd hooks`...
-npm install
-npm install jest-websocket-mock
+npm i
+npm i jest-websocket-mock
+npm i -g nodemon
 # Or, to run the tests against a local jest-websocket-mock build:
 cd ..; npm run build && npm pack; cd examples; npm install ../jest-websocket-mock-*;
 SKIP_PREFLIGHT_CHECK=true npm test -- --coverage
@@ -18,7 +19,7 @@ The websocket tests are under `src/__tests__/saga.test.js` and ``src/**tests**/A
 If you want to see the app running locally:
 
 ```bash
-node server.js  # start the server
+nodemon server.js  # start the server
 ```
 
 and in another terminal:
