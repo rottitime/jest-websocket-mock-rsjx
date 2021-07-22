@@ -9,11 +9,10 @@ const sender$ = new QueueingSubject();
 const ws$ = webSocket("ws://localhost:8080");
 
 const Rsjx = () => {
-
     const [messages,setMessage] = useState([])
 
     useEffect(() => {
-        receiver$.subscribe(res => setMessage(old => [...old, `SUBSCRIBE()reciever: ${JSON.stringify(res)}`]) )
+        receiver$.subscribe(res => setMessage(old => [...old, JSON.stringify(res)]) )
         receiver$.next({message: true})
 
         ws$.pipe(
@@ -27,18 +26,16 @@ const Rsjx = () => {
         ws$.subscribe(receiver$);
         sender$.subscribe(ws$)
 
-        receiver$.next('Reciever sent this')
-        sender$.next('sender$ time to party1 v:' + Math.random(100*10000000))
-        sender$.next('sender$ time to party2 v:' + Math.random(100*10000000))
-        sender$.next('sender$ time to party3 v:' + Math.random(100*10000000))
-        sender$.next('sender$ SENT FROM SENDER ')
-        
+        receiver$.next('reciever$ got this directly')
+        sender$.next('sender$ sent to server1: ' + Math.random(100*10000000))
+        sender$.next('sender$ sent to server2: ' + Math.random(100*10000000))
+        sender$.next('sender$ sent to server3: ' + Math.random(100*10000000))
     }, [])
 
     return <>
         <h1>RSJX</h1>
         <ol>
-        {messages.map((message,i) => <li key={i}>{message}</li> )}
+        {messages.map((message,i) => <li key={i}><i>SUBSCRIBE()recieved</i>: {message}</li> )}
         </ol>
     </>
 }
