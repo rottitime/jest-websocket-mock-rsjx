@@ -10,7 +10,7 @@ let server, client
 describe("The Rsjx component", () => {
 
     beforeEach(() => {
-        server = new WS('ws://localhost:8080');
+        server = new WS('ws://localhost:8080', {jsonProtocol: true});
         global.Math.random = () => 123
 
       });
@@ -21,21 +21,22 @@ describe("The Rsjx component", () => {
     it("the server keeps track of received messages, and yields them as they come in", async () => {
       let screen;
         client = new WebSocket("ws://localhost:8080");
-        const messages = { client1: [], client2: [] };
+        const messages = [];
         client.onmessage = (e) => {
-          messages.client1.push(e.data);
+          console.log('dedeeddedede', e.data)
+          messages.push(e.data);
         };
 
 
         server.on('connection', socket => {
           console.log('*OPENED')
           socket.on('message', data => {
-              console.log('****************************************************************', data)
+              console.log('*****************Server recieved', data)
               act(() => {
                 /* fire events that update state */
                 socket.send(`{"server v2": 1234}` );
-                server.send(`{"server v2": 1234}` );
-                expect(screen).toMatchSnapshot();
+                server.send(`{"server v3": 1234}` );
+                // expect(screen).toMatchSnapshot();
               });
               
           });
@@ -47,8 +48,14 @@ describe("The Rsjx component", () => {
         screen = await render(<Rsjx />);
        
         // client.send("hello");
-        await expect(server).toReceiveMessage('"sender$ sent to server1: 123"');
-        console.log(messages.client1)
+        await expect(server).toReceiveMessage('sender$ sent to server1: 123');
+        // await expect(server).toReceiveMessage('"sender$ sent to server2: 123"');
+        // await expect(server).toReceiveMessage('"sender$ sent to server3: 123"');
+        // screen.debug()
+        expect(screen.getByText('recieved: {"server v2":1234}')).toBeInTheDocument();
+        // expect(screen.getByText('recieved: {"server v3":1234}')).toBeInTheDocument();
+
+        console.log(messages)
         // expect(server).toHaveReceivedMessages(["hello"]);
       });
 

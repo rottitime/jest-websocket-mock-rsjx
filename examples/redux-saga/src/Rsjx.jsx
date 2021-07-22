@@ -35,7 +35,7 @@ const Rsjx = () => {
     return <>
         <h1>RSJX</h1>
         <ol>
-        {messages.map((message,i) => <li key={i}><i>SUBSCRIBE()recieved</i>: {message}</li> )}
+        {messages.map((message,i) => <li key={i}>recieved: {message}</li> )}
         </ol>
     </>
 }
