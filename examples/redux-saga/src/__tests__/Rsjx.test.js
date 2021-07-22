@@ -1,30 +1,54 @@
 import React from "react";
 // import { render, screen, userEvent, fireEvent } from "../test-utils";
-import { render, screen } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import Rsjx from "../Rsjx";
 import WS from "jest-websocket-mock";
 
 
-let server
+let server, client
 
 describe("The Rsjx component", () => {
 
     beforeEach(() => {
         server = new WS('ws://localhost:8080');
+        global.Math.random = () => 123
+
       });
       afterEach(() => {
         WS.clean();
       });
 
     it("the server keeps track of received messages, and yields them as they come in", async () => {
-        // const client = new WebSocket("ws://localhost:8080");
-        // jest.useFakeTimers();
+      let screen;
+        client = new WebSocket("ws://localhost:8080");
+        const messages = { client1: [], client2: [] };
+        client.onmessage = (e) => {
+          messages.client1.push(e.data);
+        };
 
-        // await server.connected;
+
+        server.on('connection', socket => {
+          console.log('*OPENED')
+          socket.on('message', data => {
+              console.log('****************************************************************', data)
+              act(() => {
+                /* fire events that update state */
+                socket.send(`{"server v2": 1234}` );
+                server.send(`{"server v2": 1234}` );
+                expect(screen).toMatchSnapshot();
+              });
+              
+          });
+        });
+
+
+        await server.connected;
    
-//  render(<Rsjx />);
+        screen = await render(<Rsjx />);
+       
         // client.send("hello");
-        // await expect(server).toReceiveMessage("hello");
+        await expect(server).toReceiveMessage('"sender$ sent to server1: 123"');
+        console.log(messages.client1)
         // expect(server).toHaveReceivedMessages(["hello"]);
       });
 

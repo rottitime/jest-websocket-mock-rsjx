@@ -23,11 +23,13 @@ describe("MockSocket component", () => {
             });
           });
 
-        await render(<Rsjx />);
+        const screen = await render(<Rsjx />);
 
         mockServer.clients(); // array of all connected clients
         mockServer.emit('roommessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage', 'messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage');
         expect(true).toBe(true)
+        expect(screen).toMatchSnapshot();
+
 
         // client.send("hello");
         // await expect(server).toReceiveMessage("hello");
