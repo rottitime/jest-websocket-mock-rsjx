@@ -10,8 +10,9 @@ afterEach(() => {
 
 const renderWithStore = async (ui, options = {}) => {
   const ws = new WS("ws://localhost:8080");
-  const store = makeStore();
-  const rendered = render(<Provider store={store}>{ui}</Provider>, options);
+  // const store = makeStore();
+  // const rendered = render(<Provider store={store}>{ui}</Provider>, options);
+  const rendered = render(<>{ui}</>, options);
   await ws.connected;
   return {
     ws,

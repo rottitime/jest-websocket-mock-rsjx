@@ -10,17 +10,17 @@ import { retryWhen, delay, tap } from 'rxjs/operators';
 import {QueueingSubject} from 'queueing-subject' 
 import Rsjx from "./Rsjx";
 
-// ReactDOM.render(
-//   <Rsjx />,
-//   document.getElementById("root")
-// );
-
-const store = makeStore();
 
 
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <Rsjx />,
   document.getElementById("root")
 );
+
+// const store = makeStore();
+// ReactDOM.render(
+//   <Provider store={store}>
+//     <App />
+//   </Provider>,
+//   document.getElementById("root")
+// );

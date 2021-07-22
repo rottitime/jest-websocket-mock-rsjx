@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState } from "react";
 import { webSocket } from "rxjs/webSocket";
 import { Subject } from 'rxjs';
 import { retryWhen, delay, tap } from 'rxjs/operators';
@@ -8,25 +8,39 @@ const receiver$ = new Subject();
 const sender$ = new QueueingSubject();
 const ws$ = webSocket("ws://localhost:8080");
 
-receiver$.subscribe(res => console.log(`SUBSCRIBE()reciever:`,res))
-receiver$.next({message: true})
+const Rsjx = () => {
 
-ws$.pipe(
-  retryWhen(err$ => err$.pipe(
-    tap(() => console.warn(`Websocket failed to. Retrying in seconds`)),
-    delay(10_000)
-  ))
-)
+    const [messages,setMessage] = useState([])
 
-ws$.subscribe(receiver$);
-sender$.subscribe(ws$)
+    useEffect(() => {
+        receiver$.subscribe(res => setMessage(old => [...old, `SUBSCRIBE()reciever: ${JSON.stringify(res)}`]) )
+        receiver$.next({message: true})
 
-receiver$.next('Reciever sent this')
-sender$.next('sender$ time to party1 v:' + Math.random(100*10000000))
-sender$.next('sender$ time to party2 v:' + Math.random(100*10000000))
-sender$.next('sender$ time to party3 v:' + Math.random(100*10000000))
-sender$.next('sender$ SENT FROM SENDER ')
+        ws$.pipe(
+        retryWhen(
+            err$ => err$.pipe(
+            tap(() => console.warn(`Websocket failed to. Retrying in seconds`)),
+            // delay(10_000)
+        ))
+        )
 
-const Rsjx = () => <p>RSJX</p>
+        ws$.subscribe(receiver$);
+        sender$.subscribe(ws$)
+
+        receiver$.next('Reciever sent this')
+        sender$.next('sender$ time to party1 v:' + Math.random(100*10000000))
+        sender$.next('sender$ time to party2 v:' + Math.random(100*10000000))
+        sender$.next('sender$ time to party3 v:' + Math.random(100*10000000))
+        sender$.next('sender$ SENT FROM SENDER ')
+        
+    }, [])
+
+    return <>
+        <h1>RSJX</h1>
+        <ol>
+        {messages.map((message,i) => <li key={i}>{message}</li> )}
+        </ol>
+    </>
+}
 
 export default Rsjx
